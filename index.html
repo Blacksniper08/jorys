@@ -1,491 +1,242 @@
-<!DOCTYPE html>
-<html lang="fr" class="dark">
+
+<!doctype html>
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tableau de Bord Personnel</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#f0fdf4',
-                            500: '#22c55e',
-                            600: '#16a34a',
-                            700: '#15803d',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- FontAwesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090b14">
+<title>NEXUS // Windows Control Center</title>
+<style>
+:root{color-scheme:dark;--bg:#090b14;--panel:#111626;--line:#252d43;--blue:#60a5fa;--purple:#a78bfa;--muted:#929bb3;--green:#4ade80;--red:#fb7185}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 80% 0%,#25204b 0,transparent 35%),var(--bg);color:#f2f4ff;font:14px "Segoe UI",system-ui,sans-serif}
+header{padding:24px 5%;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:15px}
+.logo{font-weight:900;letter-spacing:3px;font-size:20px}.logo span{color:var(--purple)}
+.status{color:var(--muted);font-size:12px}
+main{max-width:1150px;margin:auto;padding:30px 20px}
+h1{font-size:clamp(26px,4vw,42px);margin:5px 0 10px;letter-spacing:-1px}
+h2{font-size:17px;margin:0 0 16px}
+p{color:var(--muted);line-height:1.6}
+.eyebrow{color:var(--blue);letter-spacing:2px;font-size:11px;font-weight:800}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:26px}
+.card{background:linear-gradient(145deg,#141a2b,#0f1320);border:1px solid var(--line);border-radius:15px;padding:22px;min-width:0}
+.wide{grid-column:1/-1}
+label{display:block;color:#b9c1d7;font-size:12px;margin:13px 0 6px}
+input,select{width:100%;padding:11px;background:#090d18;color:white;border:1px solid #303951;border-radius:8px;outline:none}
+input:focus,select:focus{border-color:var(--purple)}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+button,.linkbtn{display:inline-block;border:1px solid #4c4380;background:#282044;color:#eee8ff;padding:11px 14px;border-radius:8px;cursor:pointer;font-weight:700;text-decoration:none;font-size:12px}
+button:hover,.linkbtn:hover{filter:brightness(1.2)}
+.primary{background:linear-gradient(100deg,#6d4aff,#337be8);border:0;color:white}
+button:disabled{opacity:.45;cursor:not-allowed}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.notice{border:1px solid #5b4a8a;background:#19152b;padding:13px;border-radius:9px;color:#d9d0ff;line-height:1.6;margin-top:14px}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.metric{background:#0a0f1b;border:1px solid var(--line);padding:15px;border-radius:10px;overflow-wrap:anywhere}
+.metric strong{display:block;font-size:19px;margin-top:8px}
+.small{font-size:11px;color:var(--muted)}
+#log{white-space:pre-wrap;overflow-wrap:anywhere;background:#080b12;padding:12px;border-radius:8px;color:#b9c6e7;min-height:50px}
+footer{text-align:center;padding:30px;color:var(--muted);font-size:11px}
+@media(max-width:650px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}.fields{grid-template-columns:1fr}header{padding:18px 5%}.metrics{grid-template-columns:1fr 1fr}}
+</style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300">
+<body>
+<header>
+  <div class="logo">NEXUS<span>//</span>CC</div>
+  <div class="status" id="connection">‚óè MODE APER√áU</div>
+</header>
+<main>
+  <div class="eyebrow">SYSTEM CONTROL / WINDOWS 10</div>
+  <h1>Ton PC. Tes r√©glages.</h1>
+  <p>Un panneau de contr√¥le local pour ton r√©seau et tes outils Windows. Les modifications sensibles demandent confirmation.</p>
 
-    <!-- Navigation / Header -->
-    <header class="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="bg-gradient-to-tr from-emerald-500 to-teal-400 p-2.5 rounded-2xl text-white shadow-lg shadow-emerald-500/20">
-                    <i class="fa-solid fa-gauge-high text-lg"></i>
-                </div>
-                <div>
-                    <h1 class="font-bold text-lg leading-tight">Mon Dashboard</h1>
-                    <p class="text-xs text-slate-500 dark:text-slate-400" id="live-clock">Chargement de l'heure...</p>
-                </div>
-            </div>
-            
-            <div class="flex items-center space-x-3">
-                <!-- Theme Toggle Button -->
-                <button onclick="toggleTheme()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Changer le thËme">
-                    <i id="theme-icon" class="fa-solid fa-moon"></i>
-                </button>
-            </div>
+  <div class="grid">
+    <section class="card wide">
+      <h2>‚óà √âtat du syst√®me</h2>
+      <div class="metrics">
+        <div class="metric"><span class="small">MACHINE</span><strong id="machine">‚Äî</strong></div>
+        <div class="metric"><span class="small">SYST√àME</span><strong id="os">Windows 10</strong></div>
+        <div class="metric"><span class="small">AGENT LOCAL</span><strong id="agent">D√©connect√©</strong></div>
+      </div>
+      <div id="modeNote" class="notice">Mode aper√ßu : aucune modification r√©elle ne sera effectu√©e.</div>
+      <div class="actions">
+        <button class="primary" id="refresh">Actualiser l'√©tat</button>
+        <a class="linkbtn" href="http://127.0.0.1:8765/">Ouvrir le dashboard local</a>
+      </div>
+    </section>
+
+    <section class="card wide">
+      <h2>‚åÅ Cartes r√©seau</h2>
+      <label for="adapter">Adaptateur Windows</label>
+      <select id="adapter"><option value="">Chargement‚Ä¶</option></select>
+      <div class="actions"><button id="loadAdapters">Actualiser les cartes</button></div>
+      <p class="small">Choisis pr√©cis√©ment l'interface √† modifier. Une modification IP peut couper temporairement Internet.</p>
+    </section>
+
+    <section class="card wide">
+      <h2>‚óé Configuration IPv4</h2>
+      <label for="mode">Mode d'adressage</label>
+      <select id="mode">
+        <option value="dhcp">Automatique (DHCP)</option>
+        <option value="static">Manuel (IP statique)</option>
+      </select>
+      <div id="staticFields" hidden>
+        <div class="fields">
+          <div><label for="ip">Adresse IPv4</label><input id="ip" placeholder="192.168.1.50" autocomplete="off"></div>
+          <div><label for="prefix">Pr√©fixe CIDR</label><input id="prefix" type="number" min="1" max="32" value="24"></div>
+          <div><label for="gateway">Passerelle (facultatif)</label><input id="gateway" placeholder="192.168.1.1"></div>
+          <div><label for="dns1">DNS principal</label><input id="dns1" placeholder="1.1.1.1"></div>
+          <div><label for="dns2">DNS secondaire (facultatif)</label><input id="dns2" placeholder="1.0.0.1"></div>
         </div>
-    </header>
+      </div>
+      <div class="notice">Attention : ne choisis pas une adresse d√©j√† utilis√©e sur ton r√©seau. Si tu ne connais pas tes param√®tres, conserve DHCP.</div>
+      <div class="actions"><button class="primary" id="apply" disabled>Appliquer la configuration</button></div>
+    </section>
 
-    <!-- Main Content Grid -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <section class="card">
+      <h2>‚ö° Outils Windows</h2>
+      <p>Ouvre les panneaux syst√®me officiels sans modifier de r√©glages cach√©s.</p>
+      <div class="actions">
+        <button data-settings="network">R√©seau</button>
+        <button data-settings="display">Affichage</button>
+        <button data-settings="sound">Son</button>
+        <button data-settings="apps">Applications</button>
+        <button data-settings="startup">D√©marrage</button>
+        <button data-settings="update">Windows Update</button>
+        <button data-settings="power">Alimentation</button>
+        <button data-settings="privacy">Confidentialit√©</button>
+      </div>
+    </section>
 
-            <!-- 1. BLOC-NOTES -->
-            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="font-semibold text-base flex items-center gap-2">
-                            <i class="fa-solid fa-note-sticky text-emerald-500"></i> Bloc-notes rapide
-                        </h2>
-                        <span id="note-status" class="text-xs text-slate-400">SauvegardÈ</span>
-                    </div>
-                    <textarea id="quick-note" rows="6" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition resize-none" placeholder="…crivez vos notes ici... (sauvegarde auto)"></textarea>
-                </div>
-                <div class="mt-4 flex justify-between items-center text-xs text-slate-400">
-                    <span id="note-char-count">0 caractËres</span>
-                    <button onclick="clearNote()" class="hover:text-red-500 transition"><i class="fa-solid fa-trash-can mr-1"></i> Vider</button>
-                </div>
-            </div>
+    <section class="card">
+      <h2>üõ° S√©curit√©</h2>
+      <p>Le site public ne poss√®de aucun acc√®s administrateur. L'agent √©coute uniquement sur la boucle locale et n'accepte que des actions limit√©es.</p>
+      <p class="small">Ne publie jamais de mot de passe, de jeton ou de donn√©es priv√©es dans le d√©p√¥t GitHub.</p>
+      <button id="clearLog">Effacer le journal visuel</button>
+    </section>
 
-            <!-- 2. GESTIONNAIRE DE T¬CHES (TODO LIST) -->
-            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="font-semibold text-base flex items-center gap-2">
-                            <i class="fa-solid fa-list-check text-emerald-500"></i> Mes T‚ches
-                        </h2>
-                        <span id="task-counter" class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 font-medium">0 / 0</span>
-                    </div>
-                    
-                    <!-- Formulaire ajout t‚che -->
-                    <form onsubmit="addTask(event)" class="space-y-2 mb-4">
-                        <input type="text" id="task-input" placeholder="Nouvelle t‚che..." required class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
-                        <div class="flex gap-2">
-                            <select id="task-priority" class="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                                <option value="low">PrioritÈ Basse</option>
-                                <option value="medium" selected>PrioritÈ Normale</option>
-                                <option value="high">PrioritÈ Haute</option>
-                            </select>
-                            <button type="submit" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl px-3 py-1.5 text-xs font-semibold transition shadow-sm shadow-emerald-500/20">Ajouter</button>
-                        </div>
-                    </form>
+    <section class="card wide">
+      <h2>‚ñ§ Journal de session</h2>
+      <div id="log" role="status" aria-live="polite">NEXUS initialis√©. En attente de connexion.</div>
+    </section>
+  </div>
+</main>
+<footer>NEXUS CONTROL CENTER ¬∑ Interface locale ¬∑ Aucune t√©l√©m√©trie int√©gr√©e</footer>
 
-                    <!-- Liste des t‚ches -->
-                    <div id="tasks-container" class="space-y-2 max-h-48 overflow-y-auto pr-1">
-                        <!-- Rempli par JS -->
-                    </div>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between text-xs text-slate-400">
-                    <button onclick="clearCompletedTasks()" class="hover:text-red-500 transition">Supprimer terminÈes</button>
-                </div>
-            </div>
-
-            <!-- 3. MINUTEUR / CHRONOM»TRE (POMODORO) -->
-            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="font-semibold text-base flex items-center gap-2">
-                            <i class="fa-solid fa-stopwatch text-emerald-500"></i> Focus Pomodoro
-                        </h2>
-                        <div class="flex gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs">
-                            <button onclick="setPomodoroMode('work')" id="btn-work" class="px-2 py-1 rounded-lg font-medium bg-white dark:bg-slate-700 shadow-sm transition">Travail</button>
-                            <button onclick="setPomodoroMode('break')" id="btn-break" class="px-2 py-1 rounded-lg font-medium text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition">Pause</button>
-                        </div>
-                    </div>
-
-                    <!-- Affichage Minuteur -->
-                    <div class="text-center my-6">
-                        <div id="pomo-timer" class="text-5xl font-bold tracking-tight text-slate-800 dark:text-slate-100 mb-2">25:00</div>
-                        <p id="pomo-label" class="text-xs text-slate-400">Concentrez-vous sur votre t‚che</p>
-                    </div>
-                </div>
-
-                <!-- Commandes Minuteur -->
-                <div class="flex gap-2">
-                    <button id="pomo-toggle" onclick="togglePomodoro()" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl py-2.5 text-sm font-semibold transition shadow-sm shadow-emerald-500/20">
-                        <i class="fa-solid fa-play mr-2"></i> DÈmarrer
-                    </button>
-                    <button onclick="resetPomodoro()" class="px-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl py-2.5 text-sm transition text-slate-600 dark:text-slate-300">
-                        <i class="fa-solid fa-rotate-right"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- 4. CONVERTISSEUR D'UNIT…S RAPIDE -->
-            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="font-semibold text-base flex items-center gap-2">
-                            <i class="fa-solid fa-right-left text-emerald-500"></i> Convertisseur rapide
-                        </h2>
-                        <select id="converter-type" onchange="changeConverterType()" class="bg-slate-100 dark:bg-slate-800 border-none rounded-lg px-2 py-1 text-xs font-medium focus:outline-none">
-                            <option value="currency">Monnaie</option>
-                            <option value="temp">TempÈrature</option>
-                            <option value="distance">Distance</option>
-                        </select>
-                    </div>
-
-                    <div class="space-y-3">
-                        <div>
-                            <label id="label-from" class="block text-xs text-slate-400 mb-1">Euros (Ä)</label>
-                            <input type="number" id="convert-input" value="1" oninput="convert()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
-                        </div>
-                        <div class="text-center">
-                            <i class="fa-solid fa-arrow-down text-slate-400 text-xs"></i>
-                        </div>
-                        <div>
-                            <label id="label-to" class="block text-xs text-slate-400 mb-1">Dollars ($)</label>
-                            <input type="text" id="convert-output" readonly class="w-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 rounded-xl px-3 py-2 text-sm font-semibold text-emerald-500 focus:outline-none">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 5. G…N…RATEUR DE MOTS DE PASSE -->
-            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between md:col-span-2 lg:col-span-2">
-                <div>
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="font-semibold text-base flex items-center gap-2">
-                            <i class="fa-solid fa-shield-halved text-emerald-500"></i> GÈnÈrateur de mots de passe sÈcurisÈs
-                        </h2>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Affichage rÈsultat + Copie -->
-                        <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 rounded-xl p-2">
-                            <input type="text" id="password-output" readonly class="w-full bg-transparent border-none text-sm font-mono px-2 focus:outline-none text-slate-700 dark:text-slate-200">
-                            <button onclick="copyPassword()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2 rounded-lg text-xs font-semibold transition shrink-0 shadow-sm shadow-emerald-500/20">
-                                <i class="fa-regular fa-copy"></i>
-                            </button>
-                        </div>
-
-                        <!-- Options de configuration -->
-                        <div class="space-y-3">
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-slate-500">Longueur : <strong id="length-val">12</strong></span>
-                                <input type="range" id="password-length" min="6" max="32" value="12" oninput="updatePasswordLength()" class="w-32 accent-emerald-500">
-                            </div>
-                            <div class="flex gap-4 text-xs text-slate-600 dark:text-slate-300">
-                                <label class="flex items-center gap-1.5 cursor-pointer">
-                                    <input type="checkbox" id="include-symbols" checked onchange="generatePassword()" class="accent-emerald-500 rounded"> Symboles
-                                </label>
-                                <label class="flex items-center gap-1.5 cursor-pointer">
-                                    <input type="checkbox" id="include-numbers" checked onchange="generatePassword()" class="accent-emerald-500 rounded"> Chiffres
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-                    <button onclick="generatePassword()" class="text-xs bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-3 py-1.5 rounded-lg transition font-medium">
-                        <i class="fa-solid fa-rotate mr-1"></i> GÈnÈrer un autre
-                    </button>
-                </div>
-            </div>
-
-        </div>
-    </main>
-
-    <!-- JavaScript Application Logic -->
-    <script>
-        // --- 0. CLOCK & THEME ---
-        function updateClock() {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-            document.getElementById('live-clock').innerText = now.toLocaleDateString('fr-FR', options);
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        function toggleTheme() {
-            const html = document.documentElement;
-            const icon = document.getElementById('theme-icon');
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                icon.className = "fa-solid fa-sun";
-                localStorage.setItem('theme', 'light');
-            } else {
-                html.classList.add('dark');
-                icon.className = "fa-solid fa-moon";
-                localStorage.setItem('theme', 'dark');
-            }
-        }
-
-        // Init Theme from local storage
-        if (localStorage.getItem('theme') === 'light') {
-            document.documentElement.classList.remove('dark');
-            document.getElementById('theme-icon').className = "fa-solid fa-sun";
-        }
-
-        // --- 1. BLOC-NOTES ---
-        const noteArea = document.getElementById('quick-note');
-        const noteStatus = document.getElementById('note-status');
-        const charCount = document.getElementById('note-char-count');
-
-        noteArea.value = localStorage.getItem('quick_note') || '';
-        updateNoteStats();
-
-        noteArea.addEventListener('input', () => {
-            localStorage.setItem('quick_note', noteArea.value);
-            updateNoteStats();
-            noteStatus.innerText = "SauvegardÈ";
-            setTimeout(() => { noteStatus.innerText = ""; }, 2000);
-        });
-
-        function updateNoteStats() {
-            const len = noteArea.value.length;
-            charCount.innerText = len + " caractËre" + (len > 1 ? "s" : "");
-        }
-
-        function clearNote() {
-            if (confirm("Voulez-vous vraiment vider le bloc-notes ?")) {
-                noteArea.value = '';
-                localStorage.removeItem('quick_note');
-                updateNoteStats();
-            }
-        }
-
-        // --- 2. GESTIONNAIRE DE T¬CHES ---
-        let tasks = JSON.parse(localStorage.getItem('dashboard_tasks')) || [];
-
-        function saveTasks() {
-            localStorage.setItem('dashboard_tasks', JSON.stringify(tasks));
-            renderTasks();
-        }
-
-        function addTask(e) {
-            e.preventDefault();
-            const input = document.getElementById('task-input');
-            const priority = document.getElementById('task-priority').value;
-            if(!input.value.trim()) return;
-
-            tasks.push({
-                id: Date.now(),
-                text: input.value.trim(),
-                completed: false,
-                priority: priority
-            });
-
-            input.value = '';
-            saveTasks();
-        }
-
-        function toggleTask(id) {
-            tasks = tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
-            saveTasks();
-        }
-
-        function deleteTask(id) {
-            tasks = tasks.filter(t => t.id !== id);
-            saveTasks();
-        }
-
-        function clearCompletedTasks() {
-            tasks = tasks.filter(t => !t.completed);
-            saveTasks();
-        }
-
-        function renderTasks() {
-            const container = document.getElementById('tasks-container');
-            const counter = document.getElementById('task-counter');
-            container.innerHTML = '';
-
-            const completedCount = tasks.filter(t => t.completed).length;
-            counter.innerText = `${completedCount} / ${tasks.length}`;
-
-            if(tasks.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">Aucune t‚che pour le moment.</p>`;
-                return;
-            }
-
-            // Trier par prioritÈ et Ètat
-            const sortedTasks = [...tasks].sort((a, b) => {
-                if(a.completed !== b.completed) return a.completed ? 1 : -1;
-                const weights = { high: 3, medium: 2, low: 1 };
-                return weights[b.priority] - weights[a.priority];
-            });
-
-            sortedTasks.forEach(task => {
-                const badgeColor = task.priority === 'high' ? 'bg-red-500/10 text-red-500' : task.priority === 'medium' ? 'bg-amber-500/10 text-amber-500' : 'bg-blue-500/10 text-blue-500';
-                const priorityText = task.priority === 'high' ? 'Haute' : task.priority === 'medium' ? 'Normale' : 'Basse';
-
-                const div = document.createElement('div');
-                div.className = `flex items-center justify-between p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 transition ${task.completed ? 'opacity-60 line-through' : ''}`;
-                div.innerHTML = `
-                    <div class="flex items-center gap-2.5 overflow-hidden">
-                        <input type="checkbox" ${task.completed ? 'checked' : ''} onclick="toggleTask(${task.id})" class="accent-emerald-500 rounded w-4 h-4 cursor-pointer">
-                        <span class="text-xs truncate text-slate-700 dark:text-slate-200">${escapeHtml(task.text)}</span>
-                    </div>
-                    <div class="flex items-center gap-2 shrink-0">
-                        <span class="text-[10px] px-1.5 py-0.5 rounded-md ${badgeColor} font-medium">${priorityText}</span>
-                        <button onclick="deleteTask(${task.id})" class="text-slate-400 hover:text-red-500 transition"><i class="fa-solid fa-xmark"></i></button>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-        renderTasks();
-
-        // --- 3. MINUTEUR / POMODORO ---
-        let pomoTime = 25 * 60;
-        let pomoInterval = null;
-        let pomoRunning = false;
-        let pomoMode = 'work';
-
-        function setPomodoroMode(mode) {
-            pomoMode = mode;
-            resetPomodoro();
-            if(mode === 'work') {
-                document.getElementById('btn-work').className = "px-2 py-1 rounded-lg font-medium bg-white dark:bg-slate-700 shadow-sm transition";
-                document.getElementById('btn-break').className = "px-2 py-1 rounded-lg font-medium text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition";
-                document.getElementById('pomo-label').innerText = "Concentrez-vous sur votre t‚che";
-            } else {
-                document.getElementById('btn-break').className = "px-2 py-1 rounded-lg font-medium bg-white dark:bg-slate-700 shadow-sm transition";
-                document.getElementById('btn-work').className = "px-2 py-1 rounded-lg font-medium text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition";
-                document.getElementById('pomo-label').innerText = "Prenez une pause mÈritÈe";
-            }
-        }
-
-        function togglePomodoro() {
-            const btn = document.getElementById('pomo-toggle');
-            if(pomoRunning) {
-                clearInterval(pomoInterval);
-                pomoRunning = false;
-                btn.innerHTML = `<i class="fa-solid fa-play mr-2"></i> DÈmarrer`;
-            } else {
-                pomoRunning = true;
-                btn.innerHTML = `<i class="fa-solid fa-pause mr-2"></i> Pause`;
-                pomoInterval = setInterval(() => {
-                    if(pomoTime > 0) {
-                        pomoTime--;
-                        updatePomoDisplay();
-                    } else {
-                        clearInterval(pomoInterval);
-                        pomoRunning = false;
-                        alert("Temps ÈcoulÈ !");
-                        resetPomodoro();
-                    }
-                }, 1000);
-            }
-        }
-
-        function resetPomodoro() {
-            clearInterval(pomoInterval);
-            pomoRunning = false;
-            pomoTime = pomoMode === 'work' ? 25 * 60 : 5 * 60;
-            document.getElementById('pomo-toggle').innerHTML = `<i class="fa-solid fa-play mr-2"></i> DÈmarrer`;
-            updatePomoDisplay();
-        }
-
-        function updatePomoDisplay() {
-            const minutes = Math.floor(pomoTime / 60);
-            const seconds = pomoTime % 60;
-            document.getElementById('pomo-timer').innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }
-
-        // --- 4. CONVERTISSEUR RAPIDE ---
-        function changeConverterType() {
-            const type = document.getElementById('converter-type').value;
-            const labelFrom = document.getElementById('label-from');
-            const input = document.getElementById('convert-input');
-            
-            if(type === 'currency') {
-                labelFrom.innerText = "Euros (Ä)";
-                input.value = "1";
-            } else if(type === 'temp') {
-                labelFrom.innerText = "Celsius (∞C)";
-                input.value = "20";
-            } else if(type === 'distance') {
-                labelFrom.innerText = "KilomËtres (km)";
-                input.value = "1";
-            }
-            convert();
-        }
-
-        function convert() {
-            const type = document.getElementById('converter-type').value;
-            const val = parseFloat(document.getElementById('convert-input').value) || 0;
-            const labelTo = document.getElementById('label-to');
-            const output = document.getElementById('convert-output');
-
-            if(type === 'currency') {
-                labelTo.innerText = "Dollars ($ approx.)";
-                output.value = (val * 1.08).toFixed(2) + " $";
-            } else if(type === 'temp') {
-                labelTo.innerText = "Fahrenheit (∞F)";
-                output.value = ((val * 9/5) + 32).toFixed(1) + " ∞F";
-            } else if(type === 'distance') {
-                labelTo.innerText = "Miles";
-                output.value = (val * 0.621371).toFixed(3) + " mi";
-            }
-        }
-        convert();
-
-        // --- 5. G…N…RATEUR DE MOTS DE PASSE ---
-        function updatePasswordLength() {
-            const len = document.getElementById('password-length').value;
-            document.getElementById('length-val').innerText = len;
-            generatePassword();
-        }
-
-        function generatePassword() {
-            const length = parseInt(document.getElementById('password-length').value);
-            const includeSymbols = document.getElementById('include-symbols').checked;
-            const includeNumbers = document.getElementById('include-numbers').checked;
-
-            let chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            if(includeNumbers) chars += "0123456789";
-            if(includeSymbols) chars += "!@#$%^&*()_+~`|}{[]:;?><,./-=";
-
-            let password = "";
-            for (let i = 0; i < length; i++) {
-                password += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            document.getElementById('password-output').value = password;
-        }
-
-        function copyPassword() {
-            const output = document.getElementById('password-output');
-            output.select();
-            document.execCommand('copy');
-            alert("Mot de passe copiÈ !");
-        }
-        generatePassword();
-
-        // Utilitaire sÈcuritÈ anti-XSS simple pour les t‚ches
-        function escapeHtml(text) {
-            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-            return text.replace(/[&<>"']/g, m => map[m]);
-        }
-    </script>
+<script>
+const $ = id => document.getElementById(id);
+let connected = false;
+const isLocal = location.hostname === "127.0.0.1" ||
+                location.hostname === "localhost";
+function log(s) {
+  $("log").textContent = new Date().toLocaleTimeString() + " ‚Äî " + s +
+    "\n" + $("log").textContent;
+}
+async function api(path, options={}) {
+  const r = await fetch(path, {
+    ...options,
+    headers: {"Content-Type":"application/json", ...(options.headers||{})},
+    cache:"no-store"
+  });
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.error || "Erreur HTTP " + r.status);
+  return data;
+}
+async function refresh() {
+  if (!isLocal) {
+    connected = false;
+    $("connection").textContent = "‚óè MODE APER√áU";
+    $("agent").textContent = "Non connect√©";
+    $("modeNote").textContent =
+      "GitHub Pages est une interface d'aper√ßu. Lance LANCER.bat sur ton PC puis ouvre le dashboard local pour appliquer des changements.";
+    $("apply").disabled = true;
+    $("machine").textContent = "Aper√ßu";
+    log("Mode aper√ßu : aucun acc√®s au PC.");
+    return;
+  }
+  try {
+    const s = await api("/api/status");
+    connected = true;
+    $("connection").textContent = "‚óè AGENT CONNECT√â";
+    $("agent").textContent = "En ligne";
+    $("machine").textContent = s.machine || "Windows";
+    $("os").textContent = s.os || "Windows";
+    $("modeNote").textContent = "Agent local connect√©. Les changements r√©seau demanderont une confirmation et l'autorisation Windows UAC.";
+    $("apply").disabled = false;
+    await loadAdapters();
+    log("Agent local connect√©.");
+  } catch(e) {
+    connected = false;
+    $("connection").textContent = "‚óè AGENT HORS LIGNE";
+    $("agent").textContent = "D√©connect√©";
+    $("apply").disabled = true;
+    $("modeNote").textContent = "Agent indisponible. V√©rifie que LANCER.bat est lanc√©.";
+    log("Connexion impossible : " + e.message);
+  }
+}
+async function loadAdapters() {
+  if (!isLocal) {
+    $("adapter").innerHTML = '<option value="">Disponible en local uniquement</option>';
+    return;
+  }
+  try {
+    const data = await api("/api/adapters");
+    const old = $("adapter").value;
+    $("adapter").replaceChildren();
+    for (const a of data.adapters || []) {
+      const o = document.createElement("option");
+      o.value = a.name;
+      o.textContent = `${a.name} ‚Äî ${a.status} ‚Äî ${a.speed || "vitesse inconnue"}`;
+      $("adapter").append(o);
+    }
+    if ([...$("adapter").options].some(o => o.value === old)) $("adapter").value = old;
+    if (!$("adapter").options.length) $("adapter").add(new Option("Aucune carte d√©tect√©e", ""));
+    log("Liste des cartes r√©seau actualis√©e.");
+  } catch(e) { log("Impossible de lire les cartes : " + e.message); }
+}
+$("mode").addEventListener("change", () => {
+  $("staticFields").hidden = $("mode").value !== "static";
+});
+$("refresh").addEventListener("click", refresh);
+$("loadAdapters").addEventListener("click", loadAdapters);
+$("clearLog").addEventListener("click", () => $("log").textContent = "Journal effac√©.");
+$("apply").addEventListener("click", async () => {
+  if (!connected || !isLocal) return;
+  const payload = {adapter:$("adapter").value, mode:$("mode").value};
+  if (payload.mode === "static") {
+    Object.assign(payload, {
+      ip:$("ip").value.trim(),
+      prefix:$("prefix").value,
+      gateway:$("gateway").value.trim(),
+      dns:[$("dns1").value.trim(),$("dns2").value.trim()].filter(Boolean)
+    });
+  }
+  const warning = payload.mode === "dhcp"
+    ? "Remettre cette carte en DHCP et r√©initialiser ses DNS ?"
+    : "Appliquer cette IP statique ? La connexion r√©seau peut √™tre interrompue.";
+  if (!confirm(warning + "\n\nUne demande d'autorisation Windows peut appara√Ætre.")) return;
+  try {
+    const result = await api("/api/network", {
+      method:"POST", body:JSON.stringify(payload)
+    });
+    log(result.message || "Demande envoy√©e. V√©rifie le r√©sultat Windows.");
+  } catch(e) { log("Erreur : " + e.message); }
+});
+document.querySelectorAll("[data-settings]").forEach(btn => {
+  btn.addEventListener("click", async () => {
+    if (!isLocal) {
+      log("Ouvre le dashboard local pour acc√©der aux panneaux Windows.");
+      return;
+    }
+    try {
+      await api("/api/open-settings", {
+        method:"POST",body:JSON.stringify({name:btn.dataset.settings})
+      });
+      log("Ouverture du panneau : " + btn.textContent);
+    } catch(e) { log(e.message); }
+  });
+});
+refresh();
+</script>
 </body>
 </html>
